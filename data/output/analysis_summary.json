@@ -1,0 +1,11 @@
+{
+  "total_settlements": 49,
+  "isolated": 32,
+  "critically_isolated": 12,
+  "partially_accessible": 0,
+  "accessible": 5,
+  "flooded_roads": 72,
+  "total_roads": 83,
+  "flooded_hospitals": 18,
+  "total_hospitals": 20
+}

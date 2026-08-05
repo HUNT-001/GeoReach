@@ -1,0 +1,71 @@
+======================================================================
+GeoReach - FLOOD ACCESSIBILITY PRIORITY REPORT
+======================================================================
+
+OVERVIEW
+----------------------------------------
+  Total Settlements: 49
+  Isolated: 32
+  Critically Isolated: 12
+  Partially Accessible: 0
+  Accessible: 5
+  Flooded Roads: 72
+  Total Roads: 83
+  Flooded Hospitals: 18
+  Total Hospitals: 20
+
+PRIORITY DISTRIBUTION
+----------------------------------------
+      CRITICAL:    2 settlements | ~  128361 affected population
+     VERY_HIGH:   40 settlements | ~  171440 affected population
+          HIGH:    2 settlements | ~    4300 affected population
+      MODERATE:    1 settlements | ~    3800 affected population
+           LOW:    4 settlements | ~   37350 affected population
+
+TOP 20 PRIORITY SETTLEMENTS
+----------------------------------------
+  Rank #  1 | North Lakhimpur           | Score: 0.975 | Status: critically_isolated  | Pop: 105376
+  Rank #  2 | Silapathar                | Score: 0.849 | Status: critically_isolated  | Pop:  22985
+  Rank #  3 | Sissiborgaon              | Score: 0.788 | Status: critically_isolated  | Pop:   5200
+  Rank #  4 | Dhemaji                   | Score: 0.783 | Status: critically_isolated  | Pop:  25340
+  Rank #  5 | Laluk                     | Score: 0.776 | Status: critically_isolated  | Pop:   5400
+  Rank #  6 | Bandarmari                | Score: 0.767 | Status: isolated             | Pop:   2800
+  Rank #  6 | Garamur                   | Score: 0.767 | Status: critically_isolated  | Pop:   8500
+  Rank #  8 | Borguri                   | Score: 0.766 | Status: isolated             | Pop:   1600
+  Rank #  9 | Narayanpur                | Score: 0.765 | Status: critically_isolated  | Pop:   8900
+  Rank # 10 | Ghilamora                 | Score: 0.762 | Status: isolated             | Pop:   2800
+  Rank # 11 | Boginadi                  | Score: 0.753 | Status: isolated             | Pop:   3500
+  Rank # 11 | Jengraimukh               | Score: 0.753 | Status: critically_isolated  | Pop:   7800
+  Rank # 13 | Kamalabari                | Score: 0.751 | Status: critically_isolated  | Pop:  12200
+  Rank # 14 | Dhakuakhana               | Score: 0.744 | Status: critically_isolated  | Pop:  12800
+  Rank # 15 | Bihpuria                  | Score: 0.740 | Status: critically_isolated  | Pop:  10500
+  Rank # 16 | Salmora                   | Score: 0.736 | Status: isolated             | Pop:   3100
+  Rank # 16 | Phulani                   | Score: 0.736 | Status: isolated             | Pop:   1100
+  Rank # 16 | Karatipar                 | Score: 0.736 | Status: isolated             | Pop:    900
+  Rank # 19 | Auniati                   | Score: 0.734 | Status: isolated             | Pop:   4500
+  Rank # 20 | Maijan Chapori            | Score: 0.732 | Status: isolated             | Pop:    350
+
+HOSPITAL STATUS
+----------------------------------------
+  Dhemaji Civil Hospital         | FLOODED      | Serving: 0 settlements
+  Silapathar PHC                 | FLOODED      | Serving: 0 settlements
+  Gogamukh CHC                   | Operational  | Serving: 1 settlements
+  Jonai CHC                      | Operational  | Serving: 2 settlements
+  Sissiborgaon PHC               | FLOODED      | Serving: 0 settlements
+  Bordoloni Mini PHC             | FLOODED      | Serving: 0 settlements
+  Machkhowa PHC                  | FLOODED      | Serving: 2 settlements
+  Lakhimpur Medical College & Hospital | FLOODED      | Serving: 0 settlements
+  North Lakhimpur Civil Hospital | FLOODED      | Serving: 0 settlements
+  Dhakuakhana PHC                | FLOODED      | Serving: 0 settlements
+  Bihpuria CHC                   | FLOODED      | Serving: 0 settlements
+  Narayanpur PHC                 | FLOODED      | Serving: 0 settlements
+  Nowboicha Mini PHC             | FLOODED      | Serving: 0 settlements
+  Boginadi PHC                   | FLOODED      | Serving: 0 settlements
+  Laluk PHC                      | FLOODED      | Serving: 0 settlements
+  Garamur State Dispensary       | FLOODED      | Serving: 0 settlements
+  Kamalabari PHC                 | FLOODED      | Serving: 0 settlements
+  Jengraimukh PHC                | FLOODED      | Serving: 0 settlements
+  Auniati Mini PHC               | FLOODED      | Serving: 0 settlements
+  Salmora Health Sub-Centre      | FLOODED      | Serving: 0 settlements
+
+======================================================================
