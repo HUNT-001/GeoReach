@@ -4,68 +4,258 @@ GeoReach - FLOOD ACCESSIBILITY PRIORITY REPORT
 
 OVERVIEW
 ----------------------------------------
-  Total Settlements: 49
-  Isolated: 32
-  Critically Isolated: 12
-  Partially Accessible: 0
-  Accessible: 5
-  Flooded Roads: 72
-  Total Roads: 83
-  Flooded Hospitals: 18
-  Total Hospitals: 20
+  Total Settlements: 405
+  Isolated: 262
+  Critically Isolated: 27
+  Partially Accessible: 11
+  Accessible: 105
+  Flooded Roads: 23248
+  Total Roads: 39026
+  Flooded Hospitals: 114
+  Total Hospitals: 210
 
 PRIORITY DISTRIBUTION
 ----------------------------------------
-      CRITICAL:    2 settlements | ~  128361 affected population
-     VERY_HIGH:   40 settlements | ~  171440 affected population
-          HIGH:    2 settlements | ~    4300 affected population
-      MODERATE:    1 settlements | ~    3800 affected population
-           LOW:    4 settlements | ~   37350 affected population
+      CRITICAL:    8 settlements | ~  200000 affected population
+     VERY_HIGH:  238 settlements | ~  758799 affected population
+          HIGH:   43 settlements | ~   62000 affected population
+      MODERATE:    4 settlements | ~  367136 affected population
+           LOW:  112 settlements | ~  547216 affected population
 
 TOP 20 PRIORITY SETTLEMENTS
 ----------------------------------------
-  Rank #  1 | North Lakhimpur           | Score: 0.975 | Status: critically_isolated  | Pop: 105376
-  Rank #  2 | Silapathar                | Score: 0.849 | Status: critically_isolated  | Pop:  22985
-  Rank #  3 | Sissiborgaon              | Score: 0.788 | Status: critically_isolated  | Pop:   5200
-  Rank #  4 | Dhemaji                   | Score: 0.783 | Status: critically_isolated  | Pop:  25340
-  Rank #  5 | Laluk                     | Score: 0.776 | Status: critically_isolated  | Pop:   5400
-  Rank #  6 | Bandarmari                | Score: 0.767 | Status: isolated             | Pop:   2800
-  Rank #  6 | Garamur                   | Score: 0.767 | Status: critically_isolated  | Pop:   8500
-  Rank #  8 | Borguri                   | Score: 0.766 | Status: isolated             | Pop:   1600
-  Rank #  9 | Narayanpur                | Score: 0.765 | Status: critically_isolated  | Pop:   8900
-  Rank # 10 | Ghilamora                 | Score: 0.762 | Status: isolated             | Pop:   2800
-  Rank # 11 | Boginadi                  | Score: 0.753 | Status: isolated             | Pop:   3500
-  Rank # 11 | Jengraimukh               | Score: 0.753 | Status: critically_isolated  | Pop:   7800
-  Rank # 13 | Kamalabari                | Score: 0.751 | Status: critically_isolated  | Pop:  12200
-  Rank # 14 | Dhakuakhana               | Score: 0.744 | Status: critically_isolated  | Pop:  12800
-  Rank # 15 | Bihpuria                  | Score: 0.740 | Status: critically_isolated  | Pop:  10500
-  Rank # 16 | Salmora                   | Score: 0.736 | Status: isolated             | Pop:   3100
-  Rank # 16 | Phulani                   | Score: 0.736 | Status: isolated             | Pop:   1100
-  Rank # 16 | Karatipar                 | Score: 0.736 | Status: isolated             | Pop:    900
-  Rank # 19 | Auniati                   | Score: 0.734 | Status: isolated             | Pop:   4500
-  Rank # 20 | Maijan Chapori            | Score: 0.732 | Status: isolated             | Pop:    350
+  Rank #  1 | Disangpani                | Score: 0.883 | Status: critically_isolated  | Pop:  50000
+  Rank #  2 | Sonari                    | Score: 0.831 | Status: critically_isolated  | Pop:  15000
+  Rank #  3 | Naginimora                | Score: 0.825 | Status: critically_isolated  | Pop:  15000
+  Rank #  4 | Gaurisagar Tiniali        | Score: 0.823 | Status: critically_isolated  | Pop:  15000
+  Rank #  5 | Borshahaki                | Score: 0.822 | Status: critically_isolated  | Pop:  60000
+  Rank #  6 | Naharlagun                | Score: 0.820 | Status: critically_isolated  | Pop:  15000
+  Rank #  7 | Doimukh                   | Score: 0.802 | Status: critically_isolated  | Pop:  15000
+  Rank #  8 | Tuli                      | Score: 0.801 | Status: critically_isolated  | Pop:  15000
+  Rank #  9 | Tizit                     | Score: 0.794 | Status: critically_isolated  | Pop:  15000
+  Rank # 10 | Hāthīmuriyā īgaom         | Score: 0.782 | Status: isolated             | Pop:    400
+  Rank # 10 | Godhāchalong              | Score: 0.782 | Status: isolated             | Pop:    400
+  Rank # 10 | Shil Grant                | Score: 0.782 | Status: isolated             | Pop:    400
+  Rank # 13 | Jhanji                    | Score: 0.780 | Status: isolated             | Pop:   2000
+  Rank # 14 | No. 1 Tangani Majgaon     | Score: 0.779 | Status: isolated             | Pop:   2000
+  Rank # 15 | Chapātali                 | Score: 0.778 | Status: isolated             | Pop:    400
+  Rank # 16 | Santipu                   | Score: 0.777 | Status: isolated             | Pop:    400
+  Rank # 16 | Mamorāli                  | Score: 0.777 | Status: isolated             | Pop:    400
+  Rank # 16 | Bagādād                   | Score: 0.777 | Status: isolated             | Pop:    400
+  Rank # 16 | Tsudikong                 | Score: 0.777 | Status: isolated             | Pop:   4416
+  Rank # 20 | Simaluguri                | Score: 0.775 | Status: isolated             | Pop:   2000
 
 HOSPITAL STATUS
 ----------------------------------------
-  Dhemaji Civil Hospital         | FLOODED      | Serving: 0 settlements
-  Silapathar PHC                 | FLOODED      | Serving: 0 settlements
-  Gogamukh CHC                   | Operational  | Serving: 1 settlements
-  Jonai CHC                      | Operational  | Serving: 2 settlements
-  Sissiborgaon PHC               | FLOODED      | Serving: 0 settlements
-  Bordoloni Mini PHC             | FLOODED      | Serving: 0 settlements
-  Machkhowa PHC                  | FLOODED      | Serving: 2 settlements
-  Lakhimpur Medical College & Hospital | FLOODED      | Serving: 0 settlements
-  North Lakhimpur Civil Hospital | FLOODED      | Serving: 0 settlements
-  Dhakuakhana PHC                | FLOODED      | Serving: 0 settlements
-  Bihpuria CHC                   | FLOODED      | Serving: 0 settlements
-  Narayanpur PHC                 | FLOODED      | Serving: 0 settlements
-  Nowboicha Mini PHC             | FLOODED      | Serving: 0 settlements
-  Boginadi PHC                   | FLOODED      | Serving: 0 settlements
-  Laluk PHC                      | FLOODED      | Serving: 0 settlements
-  Garamur State Dispensary       | FLOODED      | Serving: 0 settlements
-  Kamalabari PHC                 | FLOODED      | Serving: 0 settlements
-  Jengraimukh PHC                | FLOODED      | Serving: 0 settlements
-  Auniati Mini PHC               | FLOODED      | Serving: 0 settlements
-  Salmora Health Sub-Centre      | FLOODED      | Serving: 0 settlements
+  NERIST Medical Unit            | FLOODED      | Serving: 0 settlements
+  Sanjivani Hospital             | FLOODED      | Serving: 1 settlements
+  IMSR                           | FLOODED      | Serving: 4 settlements
+  Health Sub Centre              | Operational  | Serving: 3 settlements
+  Community Health Center        | Operational  | Serving: 20 settlements
+  NE Homeopathic College and Hospital | FLOODED      | Serving: 0 settlements
+  Boikunthapur Health Sub-Centre | FLOODED      | Serving: 6 settlements
+  Boriatari Memorial Hospital    | FLOODED      | Serving: 0 settlements
+  Tara Memorial Hospital         | FLOODED      | Serving: 0 settlements
+  Polo Hospital Pvt Ltd          | FLOODED      | Serving: 0 settlements
+  Sristi Hospitals And Research Centre Pvt Ltd | Operational  | Serving: 3 settlements
+  Happy Nursing Home             | Operational  | Serving: 1 settlements
+  Sanjivani Hospital, Jorhat     | FLOODED      | Serving: 0 settlements
+  A G Nursing Home               | FLOODED      | Serving: 0 settlements
+  Dr Damani's Nursing Home       | Operational  | Serving: 3 settlements
+  Malpani Nursing Home Medicure Center | FLOODED      | Serving: 0 settlements
+  Mid Town Hospital and Research Institute | Operational  | Serving: 1 settlements
+  Pragati Hospital And Research Centre | FLOODED      | Serving: 1 settlements
+  Sampreeti Hospital             | FLOODED      | Serving: 1 settlements
+  H M Hospital and Research Center | Operational  | Serving: 1 settlements
+  East Point Hospital And Research Centre | FLOODED      | Serving: 1 settlements
+  Brahmaputra Diagnostic and Hospital Ltd | Operational  | Serving: 3 settlements
+  Vincenza Gerosa Hospital       | Operational  | Serving: 3 settlements
+  Srimanta Sankardeva Hospital And Research Institute | Operational  | Serving: 3 settlements
+  Aditya Diagnostics and Hospitals | Operational  | Serving: 3 settlements
+  H.M.Poly Clinic and Diagnostics Centre | Operational  | Serving: 3 settlements
+  Jj Memorial Diagnostics And Hospitals Pvt Ltd | Operational  | Serving: 3 settlements
+  Drishti Netralaya              | Operational  | Serving: 3 settlements
+  Medicare Diagnostic And Hospital | Operational  | Serving: 3 settlements
+  Mon, District Hospital         | Operational  | Serving: 14 settlements
+  St. Lukes Hospital             | Operational  | Serving: 6 settlements
+  Deepling Tea Estate Hospital   | FLOODED      | Serving: 0 settlements
+  Bokel Tea Estate Hospital      | FLOODED      | Serving: 0 settlements
+  Manjushree Hospital            | Operational  | Serving: 1 settlements
+  Dhakuakhana F.R.U              | FLOODED      | Serving: 1 settlements
+  Romai Tea Estate               | FLOODED      | Serving: 0 settlements
+  Khumtai Tea Estate Hospital    | FLOODED      | Serving: 0 settlements
+  Greenwood Tea Estate Hospital  | Operational  | Serving: 3 settlements
+  Matmora State Dispensary       | Operational  | Serving: 0 settlements
+  Assam Medical College and Hospital | Operational  | Serving: 3 settlements
+  State DispensaryCH, Gormur     | FLOODED      | Serving: 2 settlements
+  Laluk Model Hospital           | Operational  | Serving: 1 settlements
+  Ramdhan Dikhari Hospital       | FLOODED      | Serving: 6 settlements
+  Bengenagarah Hospital          | FLOODED      | Serving: 0 settlements
+  Maijan Tea Estate Hospital     | Operational  | Serving: 3 settlements
+  Mini PHC, Charing              | FLOODED      | Serving: 2 settlements
+  Bebejia State Dispensary       | FLOODED      | Serving: 0 settlements
+  Dibrugarh State Dispensary     | Operational  | Serving: 3 settlements
+  Bongaon State Dispensary       | FLOODED      | Serving: 0 settlements
+  Ghoramora State Dispensary     | FLOODED      | Serving: 0 settlements
+  Dhemaji Civil Hospital         | Operational  | Serving: 4 settlements
+  Mohokutie Tea Estate Hospital  | FLOODED      | Serving: 1 settlements
+  Sibsagar Civil Hospital        | FLOODED      | Serving: 1 settlements
+  Jaboka Tea Estate Hospital     | FLOODED      | Serving: 0 settlements
+  Dolouhat Tea Garden Hospital   | FLOODED      | Serving: 0 settlements
+  Mini PHC, Santak               | FLOODED      | Serving: 3 settlements
+  Towkok Hospital                | FLOODED      | Serving: 0 settlements
+  Moranhat Government Hospital   | Operational  | Serving: 9 settlements
+  Longpatia Hospital             | FLOODED      | Serving: 0 settlements
+  Sonari Civil Hospital          | FLOODED      | Serving: 0 settlements
+  Deezo Tea Garden Hospital      | FLOODED      | Serving: 1 settlements
+  Namtola Tea Estate Dispensary  | FLOODED      | Serving: 1 settlements
+  Dikom Tea estate hospital      | FLOODED      | Serving: 0 settlements
+  Panigaon Hospital              | FLOODED      | Serving: 1 settlements
+  CHC, Demow                     | FLOODED      | Serving: 0 settlements
+  State DispensaryCH, Ligiripukhri Nazira | Operational  | Serving: 14 settlements
+  Patsaku Hospital               | FLOODED      | Serving: 1 settlements
+  Azad State Dispensary          | Operational  | Serving: 0 settlements
+  Kalabari Model Hospital        | Operational  | Serving: 0 settlements
+  Kherajkhat State Dispensary    | Operational  | Serving: 1 settlements
+  Hazelbank Tea Estate Hospital  | Operational  | Serving: 6 settlements
+  Narayanpur Model Hospital      | Operational  | Serving: 1 settlements
+  Civil Hospital, North Lakhimpur | Operational  | Serving: 1 settlements
+  Hingrijan Tea Estate Hospital  | FLOODED      | Serving: 9 settlements
+  Jonai Civil Hospital           | Operational  | Serving: 0 settlements
+  Ougari State Dispensary        | FLOODED      | Serving: 0 settlements
+  Dhemaji Desangpani State Dispensary | FLOODED      | Serving: 0 settlements
+  Amgoori Tea Estate Hospital    | FLOODED      | Serving: 14 settlements
+  Mazikuchi MPHC                 | Operational  | Serving: 3 settlements
+  Kalbari State Dispensary       | FLOODED      | Serving: 0 settlements
+  Dohotia State Dispensary       | Operational  | Serving: 4 settlements
+  Khatgaon MPHC                  | Operational  | Serving: 3 settlements
+  FRU, Teok                      | Operational  | Serving: 10 settlements
+  Badulipara MPHC                | FLOODED      | Serving: 0 settlements
+  Borsillah Tea Estate Hospital  | Operational  | Serving: 14 settlements
+  PHC, Gelakey                   | Operational  | Serving: 14 settlements
+  Ownamukh State Dispensary      | Operational  | Serving: 0 settlements
+  Kuralguri MPHC                 | Operational  | Serving: 0 settlements
+  Missamora BPHC                 | Operational  | Serving: 0 settlements
+  Dusutimukh hospital            | FLOODED      | Serving: 0 settlements
+  Dergaon SHC                    | FLOODED      | Serving: 3 settlements
+  Ganeshbari Tea Hospital        | FLOODED      | Serving: 0 settlements
+  Dr. Kalyan Khound              | Operational  | Serving: 3 settlements
+  Medicare Hospitals             | Operational  | Serving: 3 settlements
+  Dr. Silpika C. Bora            | Operational  | Serving: 3 settlements
+  Dr. Santanu Bora               | Operational  | Serving: 3 settlements
+  Astha Hospital                 | Operational  | Serving: 3 settlements
+  Dr. Jyoti Shyam                | FLOODED      | Serving: 0 settlements
+  Archana Trauma & Orthopaedics Hospital & Research Centre | Operational  | Serving: 3 settlements
+  Dr. Paul's Multiplicity Clinic | Operational  | Serving: 3 settlements
+  Nahortoli Tea Garden Hospital  | FLOODED      | Serving: 1 settlements
+  Saishav Clinic                 | Operational  | Serving: 3 settlements
+  Dr.A.Ahad's Clinic             | FLOODED      | Serving: 1 settlements
+  Aditya Pain and Spine Clinic   | Operational  | Serving: 3 settlements
+  Sanjeev Kakati Clinic          | Operational  | Serving: 3 settlements
+  M.F. Hospital & Research Centre | Operational  | Serving: 3 settlements
+  Dr. Narayan Upadhayay          | Operational  | Serving: 3 settlements
+  Sai Diagnostics                | Operational  | Serving: 3 settlements
+  Dr. Nazim & Dr. Nasim          | Operational  | Serving: 3 settlements
+  Heramba Bordoloi Eye Centre    | Operational  | Serving: 3 settlements
+  Dr. Kayal's Clinic             | Operational  | Serving: 3 settlements
+  G.M. Hospital                  | Operational  | Serving: 3 settlements
+  Dr. Rajen Gogoi                | FLOODED      | Serving: 0 settlements
+  Dr. Priyanka Chowdhury Dutta   | Operational  | Serving: 3 settlements
+  KONOKLOTA MEMORIAL HOSPITAL    | FLOODED      | Serving: 0 settlements
+  Dr. Parthapratim Dutta         | Operational  | Serving: 3 settlements
+  Drishti Netralaya Clinic & Opticals | Operational  | Serving: 3 settlements
+  Doctor's Chamber & Pharmacy    | Operational  | Serving: 9 settlements
+  SankaRoadev Multispeciality Physiotherapy Clinic | FLOODED      | Serving: 1 settlements
+  Dhemaji Eye Clinic             | Operational  | Serving: 4 settlements
+  Derma Clinic                   | Operational  | Serving: 3 settlements
+  Dr.Mukesh Fogla                | Operational  | Serving: 3 settlements
+  Dr. Saikat Patra               | Operational  | Serving: 3 settlements
+  Dr. Reena Ahmed                | Operational  | Serving: 3 settlements
+  Dr. Astak Ahmed                | FLOODED      | Serving: 1 settlements
+  Trinity Speciality Clinic      | Operational  | Serving: 3 settlements
+  Derma Doctor                   | Operational  | Serving: 3 settlements
+  Apollo Diagnostics             | FLOODED      | Serving: 1 settlements
+  Dr. Brinchi                    | Operational  | Serving: 4 settlements
+  Sonari Town Hospital           | FLOODED      | Serving: 0 settlements
+  Nudwa Hospital                 | FLOODED      | Serving: 0 settlements
+  Life Care Clinic               | FLOODED      | Serving: 7 settlements
+  Mili Nursing Home              | Operational  | Serving: 4 settlements
+  Blink Eye Clinic               | FLOODED      | Serving: 1 settlements
+  BCB Care Hospital              | Operational  | Serving: 4 settlements
+  Mili Hospital & Recharch Centre | Operational  | Serving: 4 settlements
+  Erc Eye Care Hub Hospital      | FLOODED      | Serving: 1 settlements
+  Physio Care Clinic             | Operational  | Serving: 3 settlements
+  Dr. Mriganka Baruah            | Operational  | Serving: 3 settlements
+  Dr. Lohit K Borah              | Operational  | Serving: 9 settlements
+  Archana Hospital               | Operational  | Serving: 3 settlements
+  Dr. Haque Chamber              | Operational  | Serving: 3 settlements
+  Netra Jyoti Eye Hospital       | FLOODED      | Serving: 1 settlements
+  Rajapukhuri Hospital           | FLOODED      | Serving: 0 settlements
+  Maxcare ENT Clinic             | FLOODED      | Serving: 1 settlements
+  Dr. Prafulla Chandra Bora      | FLOODED      | Serving: 0 settlements
+  Dr. Bn Mahanta                 | Operational  | Serving: 3 settlements
+  Holy Child Clinic and Hospital | Operational  | Serving: 3 settlements
+  Dr. Sorbeswar Bhuyan           | Operational  | Serving: 3 settlements
+  Dr. Pradip Goswami             | FLOODED      | Serving: 1 settlements
+  Orthocare & Rehab Clinic       | FLOODED      | Serving: 0 settlements
+  Polyclinic For Women & Children | FLOODED      | Serving: 0 settlements
+  Dr.Md Sahdullah                | FLOODED      | Serving: 1 settlements
+  City Orthopaedic Hospital      | FLOODED      | Serving: 1 settlements
+  Dr. Animesh Sarkar             | FLOODED      | Serving: 1 settlements
+  Aarogya Physiotherapy Clinic   | FLOODED      | Serving: 1 settlements
+  Jorhat Christian Medical Centre | Operational  | Serving: 0 settlements
+  Olympus Endoscopy Center       | FLOODED      | Serving: 1 settlements
+  Dr. Pallab Kr Bhattacharjee    | FLOODED      | Serving: 1 settlements
+  Physiotherapy Care Clinic-Jorhat | FLOODED      | Serving: 0 settlements
+  Dr. Paul's Clinic, Jorhat      | FLOODED      | Serving: 1 settlements
+  Saikia ENT Clinic              | FLOODED      | Serving: 1 settlements
+  Advanced ENT Clinic            | FLOODED      | Serving: 1 settlements
+  CNS Clinic                     | FLOODED      | Serving: 1 settlements
+  Arogya Clinic, Orthopaedic & Physiotherapy | FLOODED      | Serving: 4 settlements
+  Dr.Swagat Tamuli               | FLOODED      | Serving: 1 settlements
+  Apex Orthocare Clinic          | FLOODED      | Serving: 1 settlements
+  Dr. B.N. Dey                   | FLOODED      | Serving: 1 settlements
+  Dr. Ratul Sharma               | FLOODED      | Serving: 1 settlements
+  Chandraprabha Eye Hospital     | FLOODED      | Serving: 1 settlements
+  Niramoy Hospital and Research Centre | FLOODED      | Serving: 4 settlements
+  Mid Land Poly Clinic           | FLOODED      | Serving: 1 settlements
+  Dr. Mothurendra Borthakur Clinic and Research Centre | FLOODED      | Serving: 1 settlements
+  Mission Hospital               | Operational  | Serving: 0 settlements
+  Dr. K.C. Dey's Clinic          | FLOODED      | Serving: 0 settlements
+  Nilax Multispeciality Clinic & Diagnostic Centre | FLOODED      | Serving: 1 settlements
+  Barua Surgical Centre          | Operational  | Serving: 4 settlements
+  KG Nursing Home                | FLOODED      | Serving: 0 settlements
+  Pan Diagnostic Centre          | FLOODED      | Serving: 4 settlements
+  Dr. Bhaskar Bhagawati          | FLOODED      | Serving: 1 settlements
+  Dibya Clinic                   | FLOODED      | Serving: 1 settlements
+  Rapha Hospital                 | Operational  | Serving: 14 settlements
+  Unit Hospital                  | FLOODED      | Serving: 0 settlements
+  NPPC Hospital                  | FLOODED      | Serving: 0 settlements
+  Samaritan Hormin Hospital      | FLOODED      | Serving: 0 settlements
+  Niba Hospital                  | FLOODED      | Serving: 0 settlements
+  Tago Memorial Hospital         | FLOODED      | Serving: 0 settlements
+  Heema Hospital                 | FLOODED      | Serving: 0 settlements
+  Abees Clinic                   | FLOODED      | Serving: 0 settlements
+  RGU Health Centre              | FLOODED      | Serving: 0 settlements
+  Kuralguri Mini P.H.C.          | Operational  | Serving: 0 settlements
+  Katonibari T.E. Hospital       | FLOODED      | Serving: 0 settlements
+  Puja Hospital                  | Operational  | Serving: 3 settlements
+  Dr. J.K. Saikia Homeopathic Medical College & Hospital | FLOODED      | Serving: 0 settlements
+  ONGC Medical Section Jorhat    | FLOODED      | Serving: 1 settlements
+  Magnum                         | FLOODED      | Serving: 1 settlements
+  Magnum Diagonistic Center      | FLOODED      | Serving: 1 settlements
+  Ramakrishna Mission Hospital, Lower Subansiri | FLOODED      | Serving: 0 settlements
+  Arunachal State Hospital       | FLOODED      | Serving: 0 settlements
+  Jorhat Medical College and Hospital(JMCH) | FLOODED      | Serving: 0 settlements
+  Government Hospital            | Operational  | Serving: 20 settlements
+                                 | FLOODED      | Serving: 6 settlements
+  Laimekuri                      | Operational  | Serving: 3 settlements
+  Veterinary Hospital            | FLOODED      | Serving: 0 settlements
+  Silapathar Model Hospital      | Operational  | Serving: 1 settlements
+  Jokai Central Hospital         | Operational  | Serving: 6 settlements
+  Lakhimpur Cancer Centre        | Operational  | Serving: 1 settlements
+  Maternity and Child Health Hospital | Operational  | Serving: 1 settlements
+  Lakhimpur Medical College and Hospital | Operational  | Serving: 0 settlements
+  PB HOSPITAL                    | FLOODED      | Serving: 0 settlements
 
 ======================================================================
