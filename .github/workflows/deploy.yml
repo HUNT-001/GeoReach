@@ -1,0 +1,79 @@
+name: Build & Deploy GeoReach Dashboard
+
+# Runs when you push changes to the pipeline, its inputs, or the landing page,
+# and can also be triggered by hand from the Actions tab.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "src/**"
+      - "config/**"
+      - "data/raw/**"
+      - "index.html"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:   # manual "Run workflow" button
+
+# Permissions the Pages deployment needs
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; newer runs cancel older queued ones
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Best-effort rebuild. If the real Sentinel-1 / DEM inputs are committed
+      # under data/raw/, the dashboard is regenerated from them. If the rebuild
+      # can't run (e.g. inputs not committed), we keep the dashboard already in
+      # the repo so the site still deploys.
+      - name: Regenerate dashboard
+        continue-on-error: true
+        run: |
+          cd src
+          python main.py --scenario high || echo "Pipeline skipped/failed — using committed dashboard"
+
+      # Assemble only what the website needs into a clean _site folder
+      - name: Assemble site
+        run: |
+          mkdir -p _site/data/output
+          cp index.html _site/index.html
+          cp data/output/georreach_dashboard.html _site/data/output/georreach_dashboard.html
+          # Optional extras if present (report / summary), ignored if missing
+          cp data/output/priority_report.txt _site/data/output/ 2>/dev/null || true
+          cp data/output/analysis_summary.json _site/data/output/ 2>/dev/null || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
