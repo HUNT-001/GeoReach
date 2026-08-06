@@ -151,14 +151,17 @@ def identify_emergency_corridors(roads_gdf, settlements_gdf, hospitals_gdf):
         candidates = flooded_roads.copy()  # fall back to all flooded roads
     candidates = candidates.reset_index(drop=True)
 
-    # Buffer each candidate road (~5.5 km) and spatial-join isolated settlements
-    buffer_deg = 0.05
-    cand_buf = candidates.copy()
-    cand_buf["geometry"] = candidates.geometry.buffer(buffer_deg)
+    # Buffer each candidate road by ~5 km and spatial-join isolated settlements.
+    # Project to UTM 46N so the buffer distance is correct (metres, not degrees).
     iso = isolated[["geometry", "est_population"]].copy() if "est_population" in isolated.columns else isolated[["geometry"]].copy()
     iso = iso.set_crs(candidates.crs, allow_override=True)
 
-    joined = gpd.sjoin(cand_buf, iso, how="left", predicate="intersects")
+    cand_utm = candidates.to_crs("EPSG:32646")
+    iso_utm = iso.to_crs("EPSG:32646")
+    cand_buf = cand_utm.copy()
+    cand_buf["geometry"] = cand_utm.geometry.buffer(5000)  # 5 km
+
+    joined = gpd.sjoin(cand_buf, iso_utm, how="left", predicate="intersects")
     grp = joined.groupby(level=0)
     near_count = grp["index_right"].count()
     near_pop = grp["est_population"].sum() if "est_population" in joined.columns else near_count * 0
