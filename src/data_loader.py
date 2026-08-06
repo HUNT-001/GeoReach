@@ -82,6 +82,94 @@ def load_dem(dem_path=None):
     }
 
 
+def derive_depth_from_dem(flood_gdf, dem=None):
+    """Estimate flood DEPTH inside observed flood polygons from terrain.
+
+    Method (a light 'height-above-nearest-drainage' style approach):
+      1. Rasterise the flood extent onto the DEM grid.
+      2. For every flooded pixel, find the nearest NON-flooded shoreline pixel
+         via a Euclidean distance transform; its ground elevation approximates
+         the local water-surface elevation (WSE) — water pools up to its edge.
+      3. depth = max(0, WSE - ground_elevation), capped at a sane maximum.
+      4. Assign each flood polygon the median depth of the pixels it covers
+         (sampled at its representative point for speed).
+
+    Returns the flood_gdf with updated 'flood_depth_m' + 'depth_category',
+    or the original gdf unchanged if the DEM or dependencies are unavailable.
+    """
+    if flood_gdf is None or flood_gdf.empty:
+        return flood_gdf
+    if dem is None:
+        dem = load_dem()
+    if dem is None:
+        return flood_gdf
+    try:
+        import rasterio
+        from rasterio.features import rasterize
+        from scipy.ndimage import distance_transform_edt
+    except ImportError:
+        logger.warning("  rasterio/scipy missing — cannot derive depth from DEM")
+        return flood_gdf
+
+    elev = dem["data"].astype(float)
+    transform = dem["transform"]
+    dem_crs = dem["crs"]
+    nrows, ncols = elev.shape
+
+    # Reproject flood to DEM CRS for rasterisation
+    fl = flood_gdf.to_crs(dem_crs) if flood_gdf.crs != dem_crs else flood_gdf
+
+    flood_mask = rasterize(
+        [(geom, 1) for geom in fl.geometry if geom is not None and not geom.is_empty],
+        out_shape=(nrows, ncols), transform=transform, fill=0, dtype="uint8"
+    ).astype(bool)
+
+    if not flood_mask.any():
+        logger.info("  DEM depth: no overlap between flood and DEM grid")
+        return flood_gdf
+
+    # Nearest shoreline (non-flood) pixel for every pixel -> its elevation = WSE
+    # distance_transform_edt on the NON-flood array gives, for flooded pixels,
+    # indices of the nearest background (non-flood) pixel.
+    non_flood = ~flood_mask
+    _, (iy, ix) = distance_transform_edt(flood_mask, return_indices=True)
+    wse = elev[iy, ix]                       # water-surface elevation grid
+    depth = np.where(flood_mask, wse - elev, 0.0)
+    depth = np.clip(depth, 0.0, 12.0)        # cap at 12 m
+    # Smooth tiny DEM noise
+    depth[depth < 0.1] = 0.0
+
+    # Sample depth at each polygon's representative point
+    reps = flood_gdf.to_crs(dem_crs).geometry.representative_point()
+    inv = ~transform  # world->pixel
+    depths = []
+    for pt in reps:
+        col, row = inv * (pt.x, pt.y)
+        r, c = int(row), int(col)
+        if 0 <= r < nrows and 0 <= c < ncols and flood_mask[r, c]:
+            depths.append(round(float(depth[r, c]), 2))
+        else:
+            depths.append(None)
+
+    gdf = flood_gdf.copy()
+    # Fall back to any existing/nominal depth where sample missed
+    existing = gdf["flood_depth_m"] if "flood_depth_m" in gdf.columns else 1.0
+    gdf["flood_depth_m"] = [d if d is not None else (
+        float(existing.iloc[i]) if hasattr(existing, "iloc") else float(existing)
+    ) for i, d in enumerate(depths)]
+    # Keep a small floor so genuinely-flooded cells aren't zeroed out
+    gdf["flood_depth_m"] = gdf["flood_depth_m"].clip(lower=0.2)
+    gdf["depth_category"] = pd.cut(
+        gdf["flood_depth_m"], bins=[0, 0.5, 1.0, 2.0, 4.0, float("inf")],
+        labels=["very_shallow", "shallow", "moderate", "deep", "very_deep"]
+    )
+    matched = sum(1 for d in depths if d is not None)
+    logger.info(f"  DEM-derived flood depth: {matched}/{len(gdf)} polygons "
+                f"(range {gdf['flood_depth_m'].min():.1f}–{gdf['flood_depth_m'].max():.1f} m, "
+                f"mean {gdf['flood_depth_m'].mean():.1f} m)")
+    return gdf
+
+
 def merge_dem_tiles(tile_dir, output_path):
     """Merge multiple SRTM .hgt or .tif tiles into a single GeoTIFF.
 
@@ -170,6 +258,38 @@ def load_sentinel1_flood(preflood_path=None, flood_path=None, threshold_db=-15):
         if "scenario" not in flood_gdf.columns:
             flood_gdf["scenario"] = "observed"
 
+        # Clip to the 3 districts (declutter neighbouring-state water)
+        try:
+            bpath = os.path.join(raw, "admin_boundaries.geojson")
+            if os.path.exists(bpath):
+                bounds = gpd.read_file(bpath)
+                if not bounds.empty:
+                    union = bounds.to_crs("EPSG:4326").geometry.unary_union
+                    before = len(flood_gdf)
+                    flood_gdf = flood_gdf[flood_gdf.intersects(union)].copy()
+                    logger.info(f"  Clipped observed flood to districts: {before} -> {len(flood_gdf)}")
+        except Exception as e:
+            logger.warning(f"  Could not clip observed flood: {e}")
+
+        # Flood-exposure buffer. SAR maps OPEN water but under-detects flooding
+        # beneath vegetation and in built-up areas (double-bounce appears bright).
+        # Buffering the observed water by a modest distance captures the immediate
+        # flood-exposure zone where roads/settlements at the water's edge are cut
+        # off. Configurable via settings.yaml -> flood.observed_buffer_m (0 = off).
+        try:
+            buf_m = float(get_config().get("flood", {}).get("observed_buffer_m", 0) or 0)
+        except Exception:
+            buf_m = 0.0
+        if buf_m > 0 and not flood_gdf.empty:
+            utm = flood_gdf.to_crs("EPSG:32646")
+            utm["geometry"] = utm.geometry.buffer(buf_m)
+            flood_gdf = utm.to_crs("EPSG:4326")
+            logger.info(f"  Applied {buf_m:.0f} m flood-exposure buffer "
+                        f"(accounts for SAR under-detection under vegetation/built-up)")
+
+        # Derive real flood depth from terrain if a DEM is available
+        flood_gdf = derive_depth_from_dem(flood_gdf)
+
         logger.info(f"Flood extent loaded: {len(flood_gdf)} features")
         return flood_gdf
 
@@ -182,16 +302,22 @@ def load_sentinel1_flood(preflood_path=None, flood_path=None, threshold_db=-15):
         logger.warning("rasterio not installed — cannot process SAR data")
         return None
 
-    # Find SAR files
+    # Find SAR files (ignore obvious test/sample scaffolding files)
+    def _not_test(p):
+        b = os.path.basename(p).lower()
+        return "test" not in b and "sample" not in b and "dummy" not in b
+
     if preflood_path is None:
         candidates = glob.glob(os.path.join(raw, "*preflood*.tif")) + \
                      glob.glob(os.path.join(raw, "*pre_flood*.tif"))
+        candidates = [c for c in candidates if _not_test(c)]
         preflood_path = candidates[0] if candidates else None
 
     if flood_path is None:
         candidates = glob.glob(os.path.join(raw, "*flood*.tif"))
-        # Exclude preflood files
-        candidates = [c for c in candidates if "pre" not in os.path.basename(c).lower()]
+        # Exclude preflood files and test scaffolding
+        candidates = [c for c in candidates
+                      if "pre" not in os.path.basename(c).lower() and _not_test(c)]
         flood_path = candidates[0] if candidates else None
 
     if preflood_path is None or flood_path is None:
@@ -210,14 +336,37 @@ def load_sentinel1_flood(preflood_path=None, flood_path=None, threshold_db=-15):
     with rasterio.open(flood_path) as flood_src:
         flood_data = flood_src.read(1).astype(float)
 
-    # Convert to dB if values suggest linear scale
-    if np.nanmean(pre_data[pre_data > 0]) < 1:
+    # Convert to dB if values suggest linear scale (sigma0)
+    if np.nanmean(pre_data[np.isfinite(pre_data) & (pre_data > 0)]) < 1:
         pre_data = 10 * np.log10(np.clip(pre_data, 1e-10, None))
         flood_data = 10 * np.log10(np.clip(flood_data, 1e-10, None))
 
-    # Change detection: flood areas show decreased backscatter
+    # ── Speckle reduction: SAR is noisy; a median filter removes salt-and-pepper
+    # speckle so single bright/dark pixels don't create spurious flood specks ──
+    try:
+        from scipy.ndimage import median_filter, binary_opening
+        pre_data = median_filter(pre_data, size=3)
+        flood_data = median_filter(flood_data, size=3)
+        _have_ndimage = True
+    except ImportError:
+        _have_ndimage = False
+
+    # Change detection: NEW open water shows a strong backscatter DROP and a
+    # low absolute value during flood. Permanent water (rivers) is already dark
+    # in the pre-flood image, so we EXCLUDE it — we want newly inundated land.
     change = flood_data - pre_data
-    flood_mask = (flood_data < threshold_db) & (change < -3)  # significant decrease
+    permanent_water = pre_data < threshold_db          # water before the flood
+    new_flood = (flood_data < threshold_db) & (change < -3) & (~permanent_water)
+
+    # Morphological opening removes tiny isolated clusters (residual speckle)
+    if _have_ndimage:
+        new_flood = binary_opening(new_flood, iterations=1)
+
+    flood_mask = new_flood
+
+    # Minimum flood-patch area (m²) to keep — drops sub-resolution noise
+    px_area = abs(transform.a * transform.e)  # pixel area in map units^2
+    min_area = max(px_area * 5, 0.0)          # >= ~5 pixels
 
     # Vectorize flood mask
     flood_mask_uint8 = flood_mask.astype(np.uint8)
@@ -226,7 +375,7 @@ def load_sentinel1_flood(preflood_path=None, flood_path=None, threshold_db=-15):
     for geom_dict, value in shapes(flood_mask_uint8, transform=transform):
         if value == 1:
             geom = shape(geom_dict)
-            if geom.area > 0:
+            if geom.area > min_area:
                 # Estimate depth from backscatter change
                 # Deeper water → lower backscatter
                 centroid = geom.centroid
@@ -251,13 +400,30 @@ def load_sentinel1_flood(preflood_path=None, flood_path=None, threshold_db=-15):
     if flood_gdf.crs.to_epsg() != 4326:
         flood_gdf = flood_gdf.to_crs("EPSG:4326")
 
+    # Clip to the 3 districts if boundaries were downloaded, else the study bbox
+    try:
+        bpath = os.path.join(raw, "admin_boundaries.geojson")
+        if os.path.exists(bpath):
+            bounds = gpd.read_file(bpath)
+            if not bounds.empty:
+                bounds = bounds.to_crs("EPSG:4326")
+                before = len(flood_gdf)
+                flood_gdf = flood_gdf[flood_gdf.intersects(bounds.geometry.unary_union)].copy()
+                logger.info(f"  Clipped SAR flood to districts: {before} -> {len(flood_gdf)}")
+    except Exception as e:
+        logger.warning(f"  Could not clip SAR flood to boundaries: {e}")
+
+    flood_gdf["scenario"] = "observed_sar"
     flood_gdf["depth_category"] = pd.cut(
         flood_gdf["flood_depth_m"],
         bins=[0, 0.5, 1.0, 2.0, 4.0, float("inf")],
         labels=["very_shallow", "shallow", "moderate", "deep", "very_deep"]
     )
 
-    logger.info(f"Extracted {len(flood_gdf)} flood polygons from SAR data")
+    # Derive real flood depth from terrain if a DEM is available
+    flood_gdf = derive_depth_from_dem(flood_gdf)
+
+    logger.info(f"Extracted {len(flood_gdf)} flood polygons from Sentinel-1 SAR data")
     return flood_gdf
 
 
