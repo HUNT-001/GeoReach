@@ -1,11 +1,11 @@
 {
-  "total_settlements": 405,
-  "isolated": 262,
-  "critically_isolated": 27,
-  "partially_accessible": 11,
-  "accessible": 105,
-  "flooded_roads": 23248,
-  "total_roads": 39026,
-  "flooded_hospitals": 114,
-  "total_hospitals": 210
+  "total_settlements": 80,
+  "isolated": 43,
+  "critically_isolated": 6,
+  "partially_accessible": 2,
+  "accessible": 29,
+  "flooded_roads": 2013,
+  "total_roads": 9090,
+  "flooded_hospitals": 0,
+  "total_hospitals": 33
 }
