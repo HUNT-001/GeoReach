@@ -48,6 +48,54 @@ def osm_files_present(raw_dir):
     return all(os.path.exists(os.path.join(raw_dir, f)) for f in required)
 
 
+def load_boundaries(raw_dir):
+    """Load real district boundary polygons if downloaded, else None."""
+    path = os.path.join(raw_dir, "admin_boundaries.geojson")
+    if not os.path.exists(path):
+        return None
+    try:
+        gdf = gpd.read_file(path)
+        if gdf.empty:
+            return None
+        logger.info(f"  District boundaries found: {list(gdf['district'])}")
+        return gdf.to_crs("EPSG:4326")
+    except Exception as e:
+        logger.warning(f"  Could not read boundaries: {e}")
+        return None
+
+
+def clip_to_boundaries(gdf, boundaries, layer_name="layer"):
+    """Clip a GeoDataFrame to the union of district boundaries and tag each
+    feature with the district polygon it falls in (for points/lines)."""
+    if boundaries is None or gdf is None or gdf.empty:
+        return gdf
+    union = boundaries.geometry.unary_union
+    before = len(gdf)
+    # Keep features that intersect the district area
+    gdf = gdf[gdf.geometry.intersects(union)].copy()
+    logger.info(f"  Clipped {layer_name}: {before} -> {len(gdf)} within districts")
+    return gdf.reset_index(drop=True)
+
+
+def assign_district_by_polygon(gdf, boundaries):
+    """Assign 'district' by actual polygon containment (points/representative pts)."""
+    if boundaries is None or gdf is None or gdf.empty:
+        return gdf
+    reps = gdf.copy()
+    reps["_rep"] = reps.geometry.representative_point()
+    reps = reps.set_geometry("_rep")
+    joined = gpd.sjoin(
+        reps[["_rep"]], boundaries[["geometry", "district"]],
+        how="left", predicate="within"
+    )
+    dist = joined.groupby(level=0)["district"].first()
+    gdf = gdf.copy()
+    gdf["district"] = dist.reindex(gdf.index).fillna(
+        gdf.geometry.apply(lambda g: assign_district(g.centroid.x, g.centroid.y))
+    ).values
+    return gdf
+
+
 def assign_district(lon, lat):
     """Assign a settlement to the nearest district by center distance."""
     best, best_d = None, 1e9
@@ -93,19 +141,26 @@ def load_osm_settlements(raw_dir):
     sett = gpd.read_file(path)
     logger.info(f"  Loaded {len(sett)} OSM settlements")
 
-    def estimate_pop(row):
-        name = str(row.get("name", "")).lower()
-        if name in KNOWN_POP:
-            return KNOWN_POP[name]
-        # Try OSM population tag
+    def osm_pop_tag(row):
         pop_tag = row.get("population", "")
         try:
             if pop_tag and str(pop_tag).strip():
                 return int(float(str(pop_tag).replace(",", "")))
         except (ValueError, TypeError):
             pass
+        return None
+
+    # Provisional population; finalised (district-aware + census) later.
+    def estimate_pop(row):
+        name = str(row.get("name", "")).lower()
+        if name in KNOWN_POP:
+            return KNOWN_POP[name]
+        tag = osm_pop_tag(row)
+        if tag is not None:
+            return tag
         return PLACE_POP_DEFAULT.get(row.get("place", "village"), 1000)
 
+    sett["osm_pop_tag"] = sett.apply(lambda r: osm_pop_tag(r) or 0, axis=1)
     sett["est_population"] = sett.apply(estimate_pop, axis=1)
     sett["settlement_type"] = sett["place"]
     sett["district"] = sett.geometry.apply(
@@ -115,6 +170,41 @@ def load_osm_settlements(raw_dir):
     named = sett[sett["name"].astype(str).str.strip() != ""].copy()
     logger.info(f"  {len(named)} named settlements retained")
     return named.reset_index(drop=True)
+
+
+def finalize_populations(settlements_gdf, raw_dir):
+    """Finalise settlement populations after district assignment.
+
+    Priority: census real match > OSM population tag > known census town >
+    district-aware place-type default (realistic rural averages).
+    """
+    from census_join import join_population, district_default_pops
+    gdf = settlements_gdf.copy()
+
+    # 1) District-aware defaults for places that only had a flat guess
+    dd = district_default_pops()
+    def better_default(row):
+        name = str(row.get("name", "")).lower()
+        if name in KNOWN_POP:
+            return KNOWN_POP[name]
+        if row.get("osm_pop_tag", 0):
+            return int(row["osm_pop_tag"])
+        place = row.get("settlement_type", "village")
+        dist = row.get("district", "")
+        if place in ("city", "town", "suburb"):
+            return PLACE_POP_DEFAULT.get(place, 8000)
+        d = dd.get(dist, {})
+        return d.get(place, d.get("village", 900))
+    gdf["est_population"] = gdf.apply(better_default, axis=1).astype(int)
+
+    # 2) Overwrite with REAL Census figures where available
+    gdf, matched = join_population(gdf, raw_dir)
+    if matched == 0:
+        logger.info("  (No census_pca_assam.csv — using district-aware estimates. "
+                    "Add the file to data/raw/ for exact village populations.)")
+    if "osm_pop_tag" in gdf.columns:
+        gdf = gdf.drop(columns=["osm_pop_tag"])
+    return gdf
 
 
 def load_osm_hospitals(raw_dir):
@@ -173,6 +263,9 @@ def load_real_osm_datasets():
     logger.info("LOADING REAL OSM DATA (downloaded via fetch_data_local.py)")
     logger.info("=" * 60)
 
+    # Load real district boundaries if available (enables clipping)
+    boundaries = load_boundaries(raw_dir)
+
     logger.info("\n--- Roads ---")
     roads = load_osm_roads(raw_dir)
     logger.info("\n--- Settlements ---")
@@ -183,6 +276,25 @@ def load_real_osm_datasets():
     rivers = load_osm_rivers(raw_dir)
     logger.info("\n--- Bridges ---")
     bridges = load_osm_bridges(raw_dir)
+
+    # ── Clip everything to the 3 real districts (removes neighbouring states) ──
+    if boundaries is not None:
+        logger.info("\n--- Clipping to real district boundaries ---")
+        roads = clip_to_boundaries(roads, boundaries, "roads")
+        settlements = clip_to_boundaries(settlements, boundaries, "settlements")
+        settlements = assign_district_by_polygon(settlements, boundaries)
+        hospitals = clip_to_boundaries(hospitals, boundaries, "hospitals")
+        hospitals = assign_district_by_polygon(hospitals, boundaries)
+        rivers = clip_to_boundaries(rivers, boundaries, "rivers")
+        bridges = clip_to_boundaries(bridges, boundaries, "bridges")
+    else:
+        logger.info("\n  [No admin_boundaries.geojson] Districts assigned by nearest "
+                    "center — run 'python fetch_data_local.py --boundaries' to clip "
+                    "precisely to Dhemaji/Lakhimpur/Majuli.")
+
+    # Finalise populations (district-aware defaults + real Census join)
+    logger.info("\n--- Finalising populations ---")
+    settlements = finalize_populations(settlements, raw_dir)
 
     # Water level + ASDMA (from research, no OSM equivalent)
     water_levels = build_water_level_data()
