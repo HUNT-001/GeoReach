@@ -481,6 +481,40 @@ def add_summary_panel(m, summary, settlements=None):
     return m
 
 
+def add_download_button(m, settlements_gdf):
+    """Add a 'Download relief action plan (CSV)' button.
+
+    The CSV is embedded inline as a data-URI so the download works even on a
+    static host (GitHub Pages) with no server.
+    """
+    if settlements_gdf is None or settlements_gdf.empty:
+        return m
+    try:
+        from relief_planning import build_relief_table
+        import tempfile, os as _os, base64
+        tmp = _os.path.join(tempfile.gettempdir(), "_georeach_relief.csv")
+        build_relief_table(settlements_gdf, tmp)
+        with open(tmp, "r", encoding="utf-8") as f:
+            csv_text = f.read()
+        _os.remove(tmp)
+    except Exception as e:
+        logger.warning(f"  Could not embed relief CSV: {e}")
+        return m
+
+    b64 = base64.b64encode(csv_text.encode("utf-8")).decode("ascii")
+    btn = f"""
+    <a href="data:text/csv;base64,{b64}" download="relief_action_plan.csv"
+       style="position: fixed; bottom: 92px; left: 10px; z-index: 9999;
+              background:#6a0dad; color:#fff; text-decoration:none;
+              font-family:'Segoe UI',Arial,sans-serif; font-size:12px; font-weight:600;
+              padding:9px 14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+      ⬇ Download relief action plan (CSV)
+    </a>
+    """
+    m.get_root().html.add_child(folium.Element(btn))
+    return m
+
+
 def build_dashboard(results, output_path=None):
     """Build the complete interactive GIS dashboard.
 
@@ -507,6 +541,7 @@ def build_dashboard(results, output_path=None):
     # Title banner + decision-support panel
     m = add_title_banner(m, scenario=results.get("summary", {}).get("scenario", "high"))
     m = add_summary_panel(m, results.get("summary", {}), results.get("settlements"))
+    m = add_download_button(m, results.get("settlements"))
 
     # Add layer control (grouped, collapsed so it doesn't crowd the map)
     folium.LayerControl(collapsed=True, position="topleft").add_to(m)
