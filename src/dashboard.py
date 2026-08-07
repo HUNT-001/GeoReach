@@ -324,6 +324,52 @@ def add_emergency_corridors_layer(m, corridors):
     return m
 
 
+def add_staging_points_layer(m, staging_gdf):
+    """Add relief staging / boat-launch points for isolated settlements."""
+    if staging_gdf is None or staging_gdf.empty:
+        return m
+    logger.info("Adding relief staging points layer...")
+    grp = folium.FeatureGroup(name="Relief Staging Points", show=True)
+    for _, sp in staging_gdf.iterrows():
+        popup = folium.Popup(
+            f"<b>Relief staging point</b><br>"
+            f"Serves: {sp.get('serves_settlement','?')} ({sp.get('district','')})<br>"
+            f"Population: {int(sp.get('population',0)):,}<br>"
+            f"Water gap to cross: <b>{sp.get('water_gap_km',0):.1f} km</b><br>"
+            f"Settlement status: {str(sp.get('status','')).replace('_',' ')}",
+            max_width=260)
+        folium.Marker(
+            location=[sp.geometry.y, sp.geometry.x],
+            tooltip=f"Staging → {sp.get('serves_settlement','?')} ({sp.get('water_gap_km',0):.1f} km)",
+            popup=popup,
+            icon=folium.Icon(color="purple", icon="ship", prefix="fa"),
+        ).add_to(grp)
+    grp.add_to(m)
+    return m
+
+
+def add_flooded_bridges_layer(m, bridges_gdf):
+    """Add flooded/cut lifeline bridges."""
+    if bridges_gdf is None or bridges_gdf.empty or "is_flooded" not in bridges_gdf.columns:
+        return m
+    cut = bridges_gdf[bridges_gdf["is_flooded"]]
+    if cut.empty:
+        return m
+    logger.info("Adding flooded bridges layer...")
+    grp = folium.FeatureGroup(name="Cut Bridges (lifeline)", show=False)
+    fc = {"type": "FeatureCollection", "features": [
+        {"type": "Feature", "properties": {},
+         "geometry": g.__geo_interface__} for g in cut.geometry
+        if g is not None and not g.is_empty]}
+    folium.GeoJson(
+        fc,
+        style_function=lambda x: {"color": "#8B0000", "weight": 5, "opacity": 0.95},
+        tooltip="Cut bridge (flooded lifeline crossing)",
+    ).add_to(grp)
+    grp.add_to(m)
+    return m
+
+
 def add_title_banner(m, scenario="high"):
     """Add a fixed title banner across the top of the map."""
     banner = f"""
@@ -412,6 +458,9 @@ def add_summary_panel(m, summary, settlements=None):
           <tr style="border-bottom:1px solid #eee; color:#E39A00;"><td style="padding:3px 0;">● Partially accessible</td><td style="text-align:right;font-weight:bold;">{summary.get('partially_accessible',0)}</td></tr>
           <tr style="border-bottom:1px solid #eee; color:#2e9e2e;"><td style="padding:3px 0;">● Accessible</td><td style="text-align:right;font-weight:bold;">{summary.get('accessible',0)}</td></tr>
           <tr><td style="padding:3px 0;">Hospitals flooded</td><td style="text-align:right;font-weight:bold;">{summary.get('flooded_hospitals',0)}/{summary.get('total_hospitals',0)}</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:3px 0;">People without care (&lt;60 min)</td><td style="text-align:right;font-weight:bold;color:#d7263d;">{summary.get('population_without_care_60min',0):,}</td></tr>
+          <tr><td style="padding:3px 0;">Lifeline bridges cut</td><td style="text-align:right;font-weight:bold;">{summary.get('flooded_bridges',0)}/{summary.get('total_bridges',0)}</td></tr>
+          <tr><td style="padding:3px 0;">Relief staging points</td><td style="text-align:right;font-weight:bold;color:#6a0dad;">{summary.get('relief_staging_points',0)}</td></tr>
         </table>
         <div style="margin:10px 0 4px; font-weight:600; color:#1b3a5b;">🚑 Top priority to reach <span style="font-weight:400;color:#888;font-size:11px;">(number = population)</span></div>
         <table style="width:100%; font-size:12px; border-collapse:collapse;">{rows}</table>
@@ -450,8 +499,10 @@ def build_dashboard(results, output_path=None):
     m = add_flood_layer(m, results.get("flood"))
     m = add_road_network_layer(m, results.get("roads"))
     m = add_emergency_corridors_layer(m, results.get("emergency_corridors", []))
+    m = add_flooded_bridges_layer(m, results.get("bridges"))
     m = add_settlements_layer(m, results.get("settlements"))
     m = add_hospitals_layer(m, results.get("hospitals"))
+    m = add_staging_points_layer(m, results.get("staging_points"))
 
     # Title banner + decision-support panel
     m = add_title_banner(m, scenario=results.get("summary", {}).get("scenario", "high"))

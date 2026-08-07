@@ -150,6 +150,13 @@ def run_pipeline(scenario="moderate", use_subset=True, skip_fetch=False, use_rea
     save_dataset(results["roads"], "roads_assessed", processed_dir)
     save_dataset(results["settlements"], "settlements_scored", processed_dir)
     save_dataset(results["hospitals"], "hospitals_assessed", processed_dir)
+    if results.get("staging_points") is not None and not results["staging_points"].empty:
+        save_dataset(results["staging_points"], "relief_staging_points", processed_dir)
+
+    # ── Relief action table (CSV for field teams) ──
+    from relief_planning import build_relief_table
+    relief_csv = os.path.join(output_dir, "relief_action_plan.csv")
+    build_relief_table(results["settlements"], relief_csv)
 
     # Generate report
     report_text = generate_priority_report(

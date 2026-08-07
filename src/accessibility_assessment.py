@@ -240,25 +240,44 @@ def run_accessibility_assessment(data):
     # 7. Emergency corridors
     corridors = identify_emergency_corridors(roads_assessed, classified, hospitals_access)
 
+    # 8. Relief planning — access-to-care, staging points, flooded bridges
+    from relief_planning import (
+        compute_care_and_staging, assess_flooded_bridges,
+    )
+    logger.info("Computing access-to-care metrics & relief staging points...")
+    classified, staging_points, care_metrics = compute_care_and_staging(
+        post_graph, classified, hospitals_access
+    )
+    bridges = data.get("bridges")
+    bridges_assessed, flooded_bridges = assess_flooded_bridges(bridges, flood)
+
+    summary = {
+        "total_settlements": len(classified),
+        "isolated": int((classified["accessibility_status"] == "isolated").sum()),
+        "critically_isolated": int((classified["accessibility_status"] == "critically_isolated").sum()),
+        "partially_accessible": int((classified["accessibility_status"] == "partially_accessible").sum()),
+        "accessible": int((classified["accessibility_status"] == "accessible").sum()),
+        "flooded_roads": int(roads_assessed["is_flooded"].sum()) if "is_flooded" in roads_assessed.columns else 0,
+        "total_roads": len(roads_assessed),
+        "flooded_hospitals": int(hospitals_access["is_flooded"].sum()) if "is_flooded" in hospitals_access.columns else 0,
+        "total_hospitals": len(hospitals_access),
+        "flooded_bridges": int(flooded_bridges),
+        "total_bridges": int(len(bridges)) if bridges is not None else 0,
+        "relief_staging_points": int(len(staging_points)),
+    }
+    summary.update(care_metrics)
+
     results = {
         "roads": roads_assessed,
         "settlements": classified,
         "hospitals": hospitals_access,
         "flood": flood,
+        "bridges": bridges_assessed,
+        "staging_points": staging_points,
         "pre_graph_stats": pre_stats,
         "post_graph_stats": post_stats,
         "emergency_corridors": corridors,
-        "summary": {
-            "total_settlements": len(classified),
-            "isolated": int((classified["accessibility_status"] == "isolated").sum()),
-            "critically_isolated": int((classified["accessibility_status"] == "critically_isolated").sum()),
-            "partially_accessible": int((classified["accessibility_status"] == "partially_accessible").sum()),
-            "accessible": int((classified["accessibility_status"] == "accessible").sum()),
-            "flooded_roads": int(roads_assessed["is_flooded"].sum()) if "is_flooded" in roads_assessed.columns else 0,
-            "total_roads": len(roads_assessed),
-            "flooded_hospitals": int(hospitals_access["is_flooded"].sum()) if "is_flooded" in hospitals_access.columns else 0,
-            "total_hospitals": len(hospitals_access),
-        }
+        "summary": summary,
     }
 
     logger.info("\n" + "=" * 60)
