@@ -13,6 +13,15 @@ OVERVIEW
   Total Roads: 9090
   Flooded Hospitals: 0
   Total Hospitals: 33
+  Flooded Bridges: 213
+  Total Bridges: 893
+  Relief Staging Points: 49
+  Total Population: 294401
+  Population Cut Off: 106850
+  Population Critically Isolated: 72170
+  Population Without Care 60Min: 106850
+  Pct Population Without Care: 36.3
+  Median Extra Minutes To Care: 0.5
 
 PRIORITY DISTRIBUTION
 ----------------------------------------

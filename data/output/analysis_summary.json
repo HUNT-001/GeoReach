@@ -7,5 +7,14 @@
   "flooded_roads": 2013,
   "total_roads": 9090,
   "flooded_hospitals": 0,
-  "total_hospitals": 33
+  "total_hospitals": 33,
+  "flooded_bridges": 213,
+  "total_bridges": 893,
+  "relief_staging_points": 49,
+  "total_population": 294401,
+  "population_cut_off": 106850,
+  "population_critically_isolated": 72170,
+  "population_without_care_60min": 106850,
+  "pct_population_without_care": 36.3,
+  "median_extra_minutes_to_care": 0.5
 }
