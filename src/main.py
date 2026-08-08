@@ -172,6 +172,55 @@ def run_pipeline(scenario="moderate", use_subset=True, skip_fetch=False, use_rea
     with open(summary_path, "w") as f:
         json.dump(results["summary"], f, indent=2, default=str)
 
+    # ── PHASE 4.5: Care-access surface + relief allocation ──
+    logger.info("")
+    logger.info("PHASE 4.5: Care Surface & Relief Allocation")
+    logger.info("-" * 40)
+    try:
+        import geopandas as gpd
+        from care_surface import build_care_surface
+        bpath = os.path.join(raw_dir, "admin_boundaries.geojson")
+        boundaries = gpd.read_file(bpath) if os.path.exists(bpath) else None
+        if boundaries is not None and boundaries.empty:
+            boundaries = None
+        care_png = os.path.join(output_dir, "care_surface.png")
+        bounds, care_stats = build_care_surface(
+            results.get("post_graph"), results["hospitals"], boundaries,
+            data["bbox"], care_png
+        )
+        if bounds:
+            results["care_overlay"] = {"png": care_png, "bounds": bounds}
+            results["summary"].update(care_stats)
+    except Exception as e:
+        logger.warning(f"Care surface skipped: {e}")
+
+    # Optimal relief allocation
+    try:
+        from relief_allocation import compute_relief_allocation, save_allocation
+        alloc = compute_relief_allocation(
+            results.get("staging_points"), results["settlements"], k=8, radius_km=8
+        )
+        results["allocation"] = alloc
+        if alloc is not None and not alloc.empty:
+            save_allocation(alloc, os.path.join(output_dir, "relief_allocation_plan.csv"))
+            results["summary"]["allocation_hubs"] = int(len(alloc))
+            results["summary"]["allocation_population_covered"] = int(alloc["population_covered"].sum())
+    except Exception as e:
+        logger.warning(f"Relief allocation skipped: {e}")
+
+    # One-click plain-language situation report (PDF)
+    try:
+        from situation_report import build_situation_report
+        build_situation_report(
+            results, os.path.join(output_dir, "situation_report.pdf"), scenario=scenario
+        )
+    except Exception as e:
+        logger.warning(f"Situation report skipped: {e}")
+
+    # Re-save summary with the new metrics
+    with open(summary_path, "w") as f:
+        json.dump(results["summary"], f, indent=2, default=str)
+
     # ── PHASE 5: Dashboard ──
     logger.info("")
     logger.info("PHASE 5: Interactive Dashboard")
