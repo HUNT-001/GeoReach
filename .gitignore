@@ -17,3 +17,8 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Presentation / report deliverables (kept locally, not in the code repo)
+*.pptx
+*.pdf
+*.docx
