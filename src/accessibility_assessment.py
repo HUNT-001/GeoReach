@@ -274,6 +274,7 @@ def run_accessibility_assessment(data):
         "flood": flood,
         "bridges": bridges_assessed,
         "staging_points": staging_points,
+        "post_graph": post_graph,   # kept in memory for care-surface / allocation
         "pre_graph_stats": pre_stats,
         "post_graph_stats": post_stats,
         "emergency_corridors": corridors,
