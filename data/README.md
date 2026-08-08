@@ -4,15 +4,16 @@ This document explains **exactly what data GeoReach uses, where each piece comes
 from, and how it was extracted**. It is written so that anyone can reproduce the
 dataset from scratch using only free, public sources.
 
-> **Data-integrity statement.** The GeoReach analysis is driven entirely by
-> **real, observed data** — satellite imagery, terrain, and OpenStreetMap. There
-> is **no synthetic flood and no synthetic terrain** in the live pipeline. A
-> synthetic fallback exists in the code (`flood_simulation.py`,
-> `build_real_data.py`) purely as a safety net for when real inputs are missing;
-> with the real files below present, it is **never used**. The only *estimated*
-> values are village populations that OpenStreetMap does not tag — and those are
-> derived from **real Census 2011 district figures**, not invented (see
-> [Populations](#5-populations)).
+> **Data-integrity statement.** Every input file in `data/raw/` is **real,
+> open-source data** — Sentinel-1 SAR, SRTM terrain, and OpenStreetMap (plus an
+> optional Census 2011 file). There are **no simulated data files** in the
+> repository. There is also **no synthetic flood and no synthetic terrain** in
+> the live pipeline: a synthetic fallback exists in the code
+> (`flood_simulation.py`, `build_real_data.py`) purely as an offline safety net,
+> and it is **never invoked** when the real files are present. The only
+> *estimated* values are village populations that OpenStreetMap does not tag —
+> and those are derived from **real Census 2011 district figures**, not invented
+> (see [Populations](#5-populations)).
 
 ---
 
@@ -40,8 +41,6 @@ Three flood-prone districts on the north bank of the Brahmaputra, Assam:
 | `osm_bridges.geojson` | Bridges (2,125) | OpenStreetMap | Real |
 | `admin_boundaries.geojson` | Dhemaji / Lakhimpur / Majuli polygons | **OSM Nominatim** | Real |
 | `census_pca_assam.csv` *(optional)* | Village-level populations | **Census of India 2011** (PCA) | Real |
-| `water_levels_brahmaputra.csv` | CWC gauge stations + danger levels | **CWC / India-WRIS** | Real stations & danger levels; daily series is illustrative context |
-| `asdma_summary.csv` | District flood-damage tallies | **ASDMA** reports | Reference context |
 
 After clipping to the three districts the analysis works on: **9,090 roads, 80
 named settlements, 33 health facilities, 294 waterways, 893 bridges.**
@@ -144,8 +143,6 @@ fabricated.
 | Town populations | **Real** — Census 2011 |
 | Village populations (untagged) | **Derived** from real Census district density |
 | Isolation, priority, staging, allocation | **Computed** by the pipeline from the above |
-| `water_levels_*.csv` daily series | **Illustrative context** — stations & danger levels are real; the day-by-day values are indicative and are *not* used in the isolation computation |
-| `asdma_summary.csv` | **Reference context** from ASDMA reporting |
 
 The numbers that appear in the dashboard and report (49 villages cut off, 213
 bridges down, 106,850 people without care, etc.) come **only** from the real +

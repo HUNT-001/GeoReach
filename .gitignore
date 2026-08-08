@@ -1,0 +1,19 @@
+# Scratch / QA artifacts
+_qa/
+_qa2/
+_qa3/
+page-*.jpg
+*.tmp
+.~lock.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

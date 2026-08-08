@@ -607,13 +607,12 @@ def get_data_status_report():
         ("Flood Extent (Vector)", ["*flood*extent*.shp", "*flood*extent*.geojson",
                                     "*inundation*.shp", "*inundation*.geojson"]),
         ("Admin Boundaries", ["*admin*.shp", "*district*.shp", "*admin*.geojson"]),
-        ("ASDMA Report", ["*asdma*.csv", "*flood_damage*.csv"]),
-        ("Water Levels", ["*water_level*.csv", "*gauge*.csv"]),
-        ("Bhuvan Flood Zones", ["*bhuvan*flood*.tif", "*bhuvan*flood*.shp"]),
-        ("Geology/Soil", ["*geology*.shp", "*bhukosh*.shp", "*soil*.shp"]),
-        ("Roads (OSM)", ["roads.geojson"]),
-        ("Settlements (OSM)", ["settlements.geojson"]),
-        ("Hospitals (OSM)", ["hospitals.geojson"]),
+        ("Census 2011 PCA (optional)", ["census_pca*.csv", "*pca*.csv"]),
+        ("Roads (OSM)", ["osm_roads.geojson", "roads.geojson"]),
+        ("Settlements (OSM)", ["osm_settlements.geojson", "settlements.geojson"]),
+        ("Hospitals (OSM)", ["osm_hospitals.geojson", "hospitals.geojson"]),
+        ("Rivers (OSM)", ["osm_rivers.geojson"]),
+        ("Bridges (OSM)", ["osm_bridges.geojson"]),
     ]
 
     for label, patterns in checks:

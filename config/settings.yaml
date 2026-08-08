@@ -1,0 +1,126 @@
+# GeoReach Configuration
+# =====================
+
+project:
+  name: "GeoReach"
+  version: "1.0.0"
+  description: "Geospatial Accessibility Intelligence for Flood Response"
+
+# Study Area - Assam, India
+study_area:
+  name: "Assam"
+  country: "India"
+  # Bounding box [west, south, east, north]
+  bbox: [89.69, 24.13, 96.02, 27.97]
+  # Focus districts (most flood-prone)
+  focus_districts:
+    - "Dhemaji"
+    - "Lakhimpur"
+    - "Majuli"
+    - "Morigaon"
+    - "Nagaon"
+    - "Barpeta"
+    - "Nalbari"
+    - "Kamrup"
+    - "Darrang"
+    - "Sonitpur"
+    - "Dibrugarh"
+    - "Sivasagar"
+    - "Jorhat"
+    - "Golaghat"
+    - "Cachar"
+  crs: "EPSG:32646"  # UTM Zone 46N for Assam
+  crs_geographic: "EPSG:4326"
+
+# Data Sources
+data_sources:
+  osm:
+    # Road types to fetch
+    road_types:
+      - "motorway"
+      - "trunk"
+      - "primary"
+      - "secondary"
+      - "tertiary"
+      - "residential"
+      - "unclassified"
+    # Infrastructure tags
+    infrastructure:
+      hospitals:
+        amenity: "hospital"
+      schools:
+        amenity: "school"
+      shelters:
+        amenity: ["shelter", "community_centre"]
+      bridges:
+        man_made: "bridge"
+
+# Flood Simulation Parameters
+flood:
+  # Water level rise scenarios (meters)
+  scenarios:
+    low: 2.0
+    moderate: 4.0
+    high: 6.0
+    extreme: 8.0
+  # Default scenario
+  default_scenario: "moderate"
+  # Buffer around rivers for flood-prone areas (meters)
+  river_buffer: 2500
+  # Flood-exposure buffer applied to OBSERVED (Sentinel-1 SAR) flood extent.
+  # SAR maps open water but under-detects flooding under vegetation/built-up
+  # areas, so we buffer observed water to capture the immediate exposure zone.
+  # Set to 0 to use the raw observed open-water footprint only.
+  observed_buffer_m: 200
+  # DEM source
+  dem_source: "SRTM"
+
+# Network Analysis
+network:
+  # Speed limits by road type (km/h)
+  speed_limits:
+    motorway: 80
+    trunk: 60
+    primary: 50
+    secondary: 40
+    tertiary: 30
+    residential: 20
+    unclassified: 20
+  # Maximum travel time for accessibility (minutes)
+  max_travel_time: 60
+  # Flood depth threshold to consider road impassable (meters)
+  flood_depth_threshold: 0.3
+
+# Priority Scoring Weights
+scoring:
+  weights:
+    accessibility_loss: 0.30
+    population_exposure: 0.25
+    infrastructure_criticality: 0.20
+    isolation_severity: 0.15
+    flood_depth: 0.10
+  # Population density thresholds
+  population:
+    high_density: 1000  # per sq km
+    medium_density: 400
+    low_density: 100
+
+# Output Settings
+output:
+  dashboard_title: "GeoReach - Flood Accessibility Dashboard"
+  map_center: [27.2, 94.3]  # Center of Dhemaji-Lakhimpur-Majuli
+  map_zoom: 9
+  color_scheme:
+    flood: "#1E90FF"
+    isolated: "#FF4444"
+    accessible: "#44BB44"
+    partial: "#FFaa00"
+    hospital: "#FF0066"
+    bridge: "#8B4513"
+    road_blocked: "#FF0000"
+    road_open: "#228B22"
+
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  output: "data/output"

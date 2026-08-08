@@ -1,18 +1,19 @@
 """
-Build Geo-Accurate Real Datasets for GeoReach
-Focus Area: Dhemaji, Lakhimpur, and Majuli districts, Assam
+build_real_data.py — OFFLINE FALLBACK ONLY (not used on the real-data path)
+===========================================================================
+IMPORTANT: This module is a *fallback* used only when no OpenStreetMap /
+Sentinel-1 / SRTM downloads are present in data/raw/. When the real inputs
+exist (the normal case), the pipeline loads them via `integrate_osm.py` and
+this module's synthetic dataset builders are NEVER called.
 
-Uses verified coordinates, real settlement names, real hospital names,
-census population data, and accurate river/road geometry to create
-datasets that mirror the actual geography of these districts.
+What IS still used from here on the real path (all REAL reference data, no
+simulation): the SETTLEMENTS / HOSPITALS lists (verified names + Census-2011
+town populations), the DISTRICTS metadata, STUDY_BBOX, and the save utility.
 
-Data sources:
-- Settlement coordinates: Wikipedia, Census India 2011, govt portals
-- Population: Census of India 2011
-- Hospital names: NHM Assam, district govt portals
-- River geography: Known Brahmaputra/Subansiri courses
-- Road network: NH-15, NH-52 (now NH-715), state highways
-- Flood data: ASDMA reports 2024-2026, CWC gauge stations
+The functions that GENERATE geometry or time-series below (build_rivers,
+build_roads, build_bridges, generate_elevation_model, build_water_level_data,
+build_asdma_data) are approximate/illustrative and only run inside
+`build_all_datasets()`, i.e. the no-internet fallback.
 """
 import os
 import sys

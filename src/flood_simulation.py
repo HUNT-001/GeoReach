@@ -1,7 +1,12 @@
 """
 Flood Inundation Simulation Module for GeoReach
-Generates realistic flood inundation maps based on river proximity,
-terrain characteristics, and configurable water level scenarios.
+
+FALLBACK ONLY: this synthetic flood model runs solely when no real
+Sentinel-1 SAR flood extent is available in data/raw/. On the normal
+(real-data) path the pipeline uses the OBSERVED Sentinel-1 flood via
+`data_loader.load_sentinel1_flood()`, and the simulation below is not used.
+The `assess_flood_on_roads` / `assess_flood_on_infrastructure` helpers here
+are still used to overlay the REAL flood onto roads and facilities.
 """
 import os
 import logging

@@ -19,9 +19,12 @@ import numpy as np
 from shapely.geometry import Point
 
 from config_loader import get_config
+# NOTE: build_real_data supplies only REAL reference constants here —
+# SETTLEMENTS/HOSPITALS/DISTRICTS carry verified Census-2011 town figures and
+# district metadata; save_gdf_geojson is a file utility. The synthetic dataset
+# builders in that module are NOT imported and are never used on the real path.
 from build_real_data import (
-    SETTLEMENTS, HOSPITALS, DISTRICTS, STUDY_BBOX,
-    build_water_level_data, build_asdma_data, save_gdf_geojson,
+    SETTLEMENTS, HOSPITALS, DISTRICTS, STUDY_BBOX, save_gdf_geojson,
 )
 
 logger = logging.getLogger("OSMIntegrator")
@@ -296,10 +299,6 @@ def load_real_osm_datasets():
     logger.info("\n--- Finalising populations ---")
     settlements = finalize_populations(settlements, raw_dir)
 
-    # Water level + ASDMA (from research, no OSM equivalent)
-    water_levels = build_water_level_data()
-    asdma = build_asdma_data()
-
     # Report district breakdown
     logger.info("\nDistrict breakdown (settlements):")
     for d in DISTRICTS:
@@ -318,8 +317,6 @@ def load_real_osm_datasets():
         "hospitals": hospitals,
         "rivers": rivers,
         "bridges": bridges,
-        "water_levels": water_levels,
-        "asdma": asdma,
         "bbox": STUDY_BBOX,
     }
 
