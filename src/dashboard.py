@@ -370,6 +370,70 @@ def add_flooded_bridges_layer(m, bridges_gdf):
     return m
 
 
+def add_allocation_layer(m, alloc_gdf):
+    """Highlight the recommended relief deployment hubs (max-coverage plan)."""
+    if alloc_gdf is None or getattr(alloc_gdf, "empty", True):
+        return m
+    logger.info("Adding relief deployment hubs layer...")
+    grp = folium.FeatureGroup(name="Recommended Deployment Hubs", show=True)
+    for _, h in alloc_gdf.iterrows():
+        rank = int(h.get("deployment_priority", 0))
+        popup = folium.Popup(
+            f"<b>Deployment hub #{rank}</b><br>"
+            f"Near: {h.get('hub_near','?')} ({h.get('district','')})<br>"
+            f"Covers <b>{int(h.get('settlements_covered',0))}</b> settlements, "
+            f"<b>{int(h.get('population_covered',0)):,}</b> people<br>"
+            f"<span style='font-size:11px;color:#555;'>{h.get('covered_settlements','')}</span>",
+            max_width=280)
+        folium.Marker(
+            location=[h.geometry.y, h.geometry.x],
+            tooltip=f"Deploy #{rank} — covers {int(h.get('population_covered',0)):,} people",
+            popup=popup,
+            icon=folium.DivIcon(html=(
+                f"<div style='background:#1b3a5b;color:#fff;border:2px solid #fff;"
+                f"border-radius:50%;width:26px;height:26px;line-height:22px;"
+                f"text-align:center;font-weight:700;font-family:Arial;"
+                f"box-shadow:0 1px 4px rgba(0,0,0,.5);'>{rank}</div>")),
+        ).add_to(grp)
+    grp.add_to(m)
+    return m
+
+
+def add_care_surface_layer(m, care_overlay):
+    """Add the care-access travel-time surface as an image overlay + legend."""
+    if not care_overlay or not care_overlay.get("png") or not care_overlay.get("bounds"):
+        return m
+    import base64, os as _os
+    png = care_overlay["png"]
+    if not _os.path.exists(png):
+        return m
+    logger.info("Adding care-access surface layer...")
+    with open(png, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode("ascii")
+    folium.raster_layers.ImageOverlay(
+        image="data:image/png;base64," + b64,
+        bounds=care_overlay["bounds"],
+        opacity=0.6,
+        name="Care Access (time to hospital)",
+        show=False,
+    ).add_to(m)
+
+    legend = """
+    <div style="position: fixed; bottom: 132px; left: 10px; z-index: 9999;
+        background: rgba(255,255,255,0.95); border-radius: 8px; padding: 8px 10px;
+        font-family:'Segoe UI',Arial,sans-serif; font-size:11px; color:#1b3a5b;
+        box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+      <div style="font-weight:600;margin-bottom:4px;">Time to nearest hospital</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:#1a9850;"></span> &le; 10 min</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:#a6d96a;"></span> 10&ndash;30 min</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:#fdae61;"></span> 30&ndash;60 min</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:#d73027;"></span> &gt; 60 min / no access</div>
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend))
+    return m
+
+
 def add_title_banner(m, scenario="high"):
     """Add a fixed title banner across the top of the map."""
     banner = f"""
@@ -530,6 +594,7 @@ def build_dashboard(results, output_path=None):
     m = create_base_map()
 
     # Add layers in order (bottom to top)
+    m = add_care_surface_layer(m, results.get("care_overlay"))
     m = add_flood_layer(m, results.get("flood"))
     m = add_road_network_layer(m, results.get("roads"))
     m = add_emergency_corridors_layer(m, results.get("emergency_corridors", []))
@@ -537,6 +602,7 @@ def build_dashboard(results, output_path=None):
     m = add_settlements_layer(m, results.get("settlements"))
     m = add_hospitals_layer(m, results.get("hospitals"))
     m = add_staging_points_layer(m, results.get("staging_points"))
+    m = add_allocation_layer(m, results.get("allocation"))
 
     # Title banner + decision-support panel
     m = add_title_banner(m, scenario=results.get("summary", {}).get("scenario", "high"))
